@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+<div>
+    <div>
+        <h2>Имя:</h2>
+        <p th:text="${user.getFirstName()}"></p>
+    </div>
+    <div>
+        <h2>Фамилия:</h2>
+        <p th:text="${user.getLastName()}"></p>
+    </div>
+    <div>
+        <h2>Возраст:</h2>
+        <p th:text="${user.getAge()}"></p>
+    </div>
+    <div>
+        <h2>Email:</h2>
+        <p th:text="${user.getEmail()}"></p>
+    </div>
+    <br>
+    <br>
+    <a href="/"> На главную</a>
+</div>
+</body>
+</html>
