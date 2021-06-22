@@ -5,6 +5,7 @@ import org.gaverdov.springBoot.models.User;
 import org.gaverdov.springBoot.repositories.RoleRepository;
 import org.gaverdov.springBoot.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,28 +26,15 @@ public class AdminController {
         this.roleRepository = roleRepository;
     }
 
-    @GetMapping("/")
-    public String index(Model model) {
-        List<User> userList = userService.getAllUsers();
-        model.addAttribute("welcomeUser", userList);
-        return "index";
-    }
-
-
     @GetMapping("/admin")
-    public String showUsers(Model model) {
+    public String showUsers(Model model, Authentication aut) {
         List<User> userList = userService.getAllUsers();
+        model.addAttribute("userAuthentication", userService.getUserByEmail(aut.getName()));
         model.addAttribute("users", userList);
         return "show";
     }
 
-    @GetMapping(value = "/admin/new")
-    public String createUserForm(Model model) {
-        model.addAttribute("user", new User());
-        return "new";
-    }
-
-    @PostMapping("/admin")
+    @PostMapping("/admin/save")
     public String createUser(@ModelAttribute("user") User user,
                              @RequestParam(value = "rolesId") List<String> roles) {
         Long idRole = Long.parseLong(roles.get(0));
@@ -62,21 +50,20 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @DeleteMapping("/admin/{id}")
-    public String delete(@PathVariable("id") Long id) {
+    @DeleteMapping("/admin/delete")
+    public String delete(Long id) {
         userService.removeUserById(id);
         return "redirect:/admin";
     }
 
-    @GetMapping("/admin/{id}/edit")
-    public String edit(Model model, @PathVariable("id") Long id) {
-        model.addAttribute("user", userService.getUserById(id));
-        return "edit";
+    @GetMapping("/admin/edit")
+    @ResponseBody
+    public User edit(Long id) {
+        return userService.getUserById(id);
     }
 
-    @PatchMapping("/admin/{id}")
+    @PatchMapping("/admin/update")
     public String update(@ModelAttribute("user") User user,
-                         @PathVariable("id") Long id,
                          @RequestParam(value = "rolesId") List<String> roles) {
         Long idRole = Long.parseLong(roles.get(0));
         if (idRole != 1) {

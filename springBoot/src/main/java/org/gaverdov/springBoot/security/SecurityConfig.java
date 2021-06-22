@@ -26,12 +26,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
-
+        http.formLogin()
+                // указываем страницу с формой логина
+                .loginPage("/login")
+                //указываем логику обработки при логине
+                .successHandler(new SuccessUserHandler())
+                // указываем action с формы логина
+                .loginProcessingUrl("/login")
+                // Указываем параметры логина и пароля с формы логина
+                .usernameParameter("j_email")
+                .passwordParameter("j_password")
+                // даем доступ к форме логина всем
+                .permitAll();
 
         http.authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user/**").authenticated()
+                .antMatchers("/**").authenticated()
+                .antMatchers("/admin/**").hasAuthority("ADMIN")
                 .and().formLogin()
                 .successHandler(successUserHandler);
 
