@@ -14,7 +14,7 @@ const userFetchService = {
     findAllUsers: async () => await fetch('admin/users'),
     findOneUser: async (id) => await fetch(`admin/users/${id}`),
     // addNewUser: async (user) => await fetch('api/users', {method: 'POST', headers: userFetchService.head, body: JSON.stringify(user)}),
-    updateUser: async (user, id) => await fetch(`admin/users/${id}`, {method: 'PUT', headers: userFetchService.head, body: JSON.stringify(user)}),
+    updateUser: async (user, id) => await fetch(`admin/users`, {method: 'PUT', headers: userFetchService.head, body: JSON.stringify(user)}),
     deleteUser: async (id) => await fetch(`admin/users/${id}`, {method: 'DELETE', headers: userFetchService.head})
 }
 
@@ -176,13 +176,13 @@ async function editUser(modal, id) {
     })
 
     $("#editButton").on('click', async () => {
-        let id = modal.find("#id").val().trim();
-        let firstName = modal.find("#firstName").val().trim();
-        let lastName = modal.find("#lastName").val().trim();
-        let age = modal.find("#age").val().trim();
-        let email = modal.find("#email").val().trim();
-        let password = modal.find("#password").val().trim();
-        let roles = modal.find("#modal-rolesId").val().trim();
+        let id = modal.find("#modal-id").val();
+        let firstName = modal.find("#modal-firstName").val();
+        let lastName = modal.find("#modal-lastName").val();
+        let age = modal.find("#modal-age").val();
+        let email = modal.find("#modal-email").val();
+        let password = modal.find("#modal-password").val();
+        let roles = modal.find("#modal-rolesId").val();
 
         let data = {
             id: id,
@@ -191,8 +191,10 @@ async function editUser(modal, id) {
             age: age,
             email: email,
             password: password,
-            roles: roles
+            roles: [{id:roles, role:'USER'}]
         }
+
+        console.log(data)
         const response = await userFetchService.updateUser(data, id);
 
         if (response.ok) {

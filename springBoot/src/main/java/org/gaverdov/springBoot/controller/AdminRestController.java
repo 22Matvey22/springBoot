@@ -58,7 +58,6 @@ public class AdminRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<User> delete(@PathVariable("id") Long id) {
-        User user = userService.getUserById(id);
         if (id == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -78,19 +77,8 @@ public class AdminRestController {
     }
 
     @PutMapping("")
-    public ResponseEntity<User> update(@RequestBody User user,
-                                       @RequestParam(value = "rolesId") List<String> roles) {
-        Long idRole = Long.parseLong(roles.get(0));
+    public ResponseEntity<User> update(@RequestBody User user) {
         HttpHeaders httpHeaders = new HttpHeaders();
-
-        if (idRole != 1) {
-            Set<Role> rolesUser = new HashSet<>();
-            rolesUser.add(roleRepository.getById(1L)); //добавляю ROLE_USER
-            rolesUser.add(roleRepository.getById(idRole)); //добавляю роль, которую выберет пользователь
-            user.setRoles(rolesUser);
-        } else {
-            user.setRoles(Collections.singleton(roleRepository.getById(1L))); //добавляю только ROLE_USER
-        }
         userService.updateUser(user);
         return user != null ?
                 new ResponseEntity<>(user, httpHeaders, HttpStatus.OK)
