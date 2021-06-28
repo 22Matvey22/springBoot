@@ -1,8 +1,6 @@
 package org.gaverdov.springBoot.controller;
 
-import org.gaverdov.springBoot.models.Role;
 import org.gaverdov.springBoot.models.User;
-import org.gaverdov.springBoot.repositories.RoleRepository;
 import org.gaverdov.springBoot.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -10,21 +8,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/admin/users")
 public class AdminRestController {
     private final UserService userService;
-    private final RoleRepository roleRepository;
 
     @Autowired
-    public AdminRestController(UserService userService, RoleRepository roleRepository) {
+    public AdminRestController(UserService userService) {
         this.userService = userService;
-        this.roleRepository = roleRepository;
     }
 
     @GetMapping
@@ -37,19 +30,8 @@ public class AdminRestController {
     }
 
     @PostMapping
-    public ResponseEntity<User> saveUser(@RequestBody User user,
-                                         @RequestParam(value = "rolesId") List<String> roles) {
-        Long idRole = Long.parseLong(roles.get(0));
+    public ResponseEntity<User> saveUser(@RequestBody User user) {
         HttpHeaders httpHeaders = new HttpHeaders();
-
-        if (idRole != 1) {
-            Set<Role> rolesUser = new HashSet<>();
-            rolesUser.add(roleRepository.getById(1L)); //добавляю ROLE_USER
-            rolesUser.add(roleRepository.getById(idRole)); //добавляю роль, которую выберет пользователь
-            user.setRoles(rolesUser);
-        } else {
-            user.setRoles(Collections.singleton(roleRepository.getById(1L))); //добавляю только ROLE_USER
-        }
         userService.addUser(user);
         return user != null ?
                 new ResponseEntity<>(user, httpHeaders, HttpStatus.CREATED)

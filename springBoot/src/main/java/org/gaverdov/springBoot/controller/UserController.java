@@ -37,7 +37,10 @@ public class UserController {
     }
 
     @GetMapping("/admin")
-    public String admin() {
+    public String admin(Model model,
+                        Authentication aut) {
+        User user = userService.getUserByEmail(aut.getName());
+        model.addAttribute("userAuthentication", user);
         return "show";
     }
 }
